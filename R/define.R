@@ -1,9 +1,19 @@
 library(metrumrg)
 library(SASxport)
 
+#' Generate a latex hyperlink.
+#' 
+#' Generates a latex hyperlink.
 .hyperlink <- function(label, caption)glue('\\hyperlink{',label,'}{',caption,'}')
+
+#' Generate a latex hypertarget.
+#' 
+#' Generates a latex hypertarget.
 .hypertarget <- function(label, caption)glue('\\hypertarget{',label,'}{',caption,'}')
 
+#' Create latex content for define.doc menu.
+#' 
+#' Creates latex content for define.doc menu.
 .menu <- function(
   dname,
   title,
@@ -43,7 +53,15 @@ library(SASxport)
   menu <- append(menu,pretable,prepos)
   menu
 }
+
+#'  Reverse a string.
+#'  
+#'  Reverses the order of characters in a string.
 .strReverse <- function(x)sapply(lapply(strsplit(x, NULL), rev), paste, collapse = "")
+
+#'  Isolate a filename extenstion.
+#'  
+#'  Returns the extension of a filename.
 .extension <- function(x,...){
   x <- .strReverse(x)
   x <- sub('\\..*','',x)
@@ -57,9 +75,26 @@ library(SASxport)
   x    
 }
 
+#' Create a submission.
+#' 
+#' Returns a list of vetted artifacts (spec or char corresponding to x)
+#' that represent a submission object for further processing.
 as.submission <- function(x,...)UseMethod('as.submission') 
-# returns a list of vetted artifacts (spec or char corresponding to x)
+
+#' Coerce a submission to class submission.
+#' 
+#' Coerces a submission to class submission.
 as.submission.submission <- function(x,...)x
+
+#' Render a character vector as class submission.
+#' 
+#' Converts a character vector of file names to class submission.
+#' 
+#' @param x filenames: xpt, csv, spec, txt, other
+#' @param tag short names for each element of x
+#' @param description informative multi-word label for each element of x
+#' @param dir parent directory for placement of submission artifacts
+#' @param subdir optional subdirectories relative to dir for each submission artifact
 as.submission.character <- function(
   x, # xpt, csv, spec, txt, other
   tag = names(x),
@@ -99,20 +134,54 @@ as.submission.character <- function(
   out
 }
 
+#' Coerce to class xport.
+#' 
+#' Coerces to class xport.
 as.xport <- function(x, ...)UseMethod('as.xport')
+
+#' Coerce labeled to xport.
+#' 
+#' Coerces labeled to xport.
 as.xport.labeled <- function(x,name,file,autogen.formats=FALSE,...){
   y <- list(x)
   names(y) <- name
   write.xport(list=y,file=file,autogen.formats=autogen.formats)
   invisible(x)
 }
+
+#' Coerce to class labeled.
+#' 
+#' Coerces to class labeled.
 as.labeled <- function(x,...)UseMethod('as.labeled')
+
+#' Coerce character to class labeled.
+#' 
+#' Coerces character to a labeled data.frame.
+#' 
+#' @param x length-one filename for csv-formatted data file
+#' @param spec length-one filename for spec-formated file
+#' @param ... passed to as.labeled.dat
 as.labeled.character <- function(x,spec,...){
   dat <- read.csv(x,as.is=TRUE,na.strings=c('','.'))
   if(missing(spec)) spec <- read.spec(sub('\\.csv$','.spec',x))
   #spec$guide[encoded(spec)] <- recode(spec$guide[encoded(spec)])
   as.labeled(dat,spec=spec,...)
 }
+
+#' Coerce data.frame to labeled.
+#' 
+#' Coerces data.frame to labeled.
+#' 
+#' Numeric values less than 1e-70 are coerced to zero to solve SAS encoding issues.
+#' Column names are forced unique and forced SAS-compliant with \code{]link{makesasnames}}.
+#' Labels are added to the data.frame column names, and to the data.frame itself.
+#' 
+#' @method as.labeled data.frame
+#' @param x data.frame
+#' @param label a SAS-style label for x
+#' @param spec a spec (specification) data.frame containing column labels
+#' @param check should the data.frame be required to match its specification?
+#' @param ... ignored
 as.labeled.data.frame <- function(x, label, spec, check=TRUE, ...){
   spec <- as.spec(spec)
   if(check) stopifnot(x %matches% spec)
@@ -129,6 +198,20 @@ as.labeled.data.frame <- function(x, label, spec, check=TRUE, ...){
   x
 }
 
+#' Isolate arguments for an extension-classified define target.
+#' 
+#' Handles each define target by isolating the relevant argument subset 
+#' and forwarding to generic handler.
+#' 
+#' @param x path to one define target, classified by extension
+#' @param ref set of all define targets: key to isolating further arguments
+#' @param tag short names for items
+#' @param dir directory for storing artifacts
+#' @param subdir subdirectories relative to dir for storing artifacts
+#' @param des descriptions of items
+#' @param copy should x be copied to dir(/subdir)?
+#' @param ... passed along
+#' 
 .handleEach <- function(x,ref,tag,dir,subdir,des,copy,...){
   tag <- tag[match(x,ref)]
   subdir <- subdir[match(x,ref)]
@@ -136,7 +219,27 @@ as.labeled.data.frame <- function(x, label, spec, check=TRUE, ...){
   .handle(x,tag=tag,dir=dir,subdir=subdir,des=des,copy=copy,...)
 }
 
+#' Handle a define target.
+#' 
+#' Handles a particular define target.
 .handle <- function(x,...)UseMethod('.handle')
+
+#' Handle a define target that is a path to a csv file.
+#' 
+#' Handles a define target that is a path to a csv file. If there is not
+#' a corresponding *.spec file in the same directory, it will be created
+#' and a message will be issued.  Probably spec should be edited 
+#' and \code{link{define}} should be re-run, since column labels 
+#' and item decodes (i.e. factor labels) cannot be guessed.
+#' 
+#' @param x path to a csv file
+#' @param tag short name
+#' @param dir directory for storing artifact
+#' @param subdir subdirectory relative to dir for storing artifact
+#' @param des description of item
+#' @param copy should x be copied to dir(/subdir)?
+#' @param ... passed along
+#' 
 .handle.csv <- function(x,tag,dir,subdir,des,copy,...){
   file <- sub('\\.csv$','.spec',x)
   spec <- if(file.exists(file)) read.spec(file) else specification(read.csv(x,as.is=TRUE,na.strings=c('','.')))
@@ -159,6 +262,21 @@ as.labeled.data.frame <- function(x, label, spec, check=TRUE, ...){
   }
 }
 
+#' Copy target to directory.
+#' 
+#' Copies define target to define directory.  In case of csv files, output is SAS Transport (xpt)
+#' rather than direct copy.
+#' 
+#' @param x path to a file
+#' @param tag short name
+#' @param dir directory for storing artifact
+#' @param subdir subdirectory relative to dir for storing artifact
+#' @param des description of item: SAS-style label for csv conversion to xpt
+#' @param spec spec data.frame if x is csv: source of SAS-style column labels for csv conversion to xpt
+#' @param overwrite should file be overwritten if already present?
+#' @param export should x be (read and) converted to xpt?
+#' @param ... passed to as.xport, as.labeled, and file.copy.
+
 .copy <- function(x,tag,dir,subdir, des=NULL, spec=NULL, overwrite=TRUE, export = FALSE, ext=if(export) '.xpt' else '.txt', ...){
   file <- file.path(subdir,glue(tag,ext))
   path <- file.path(dir,file)
@@ -171,12 +289,40 @@ as.labeled.data.frame <- function(x, label, spec, check=TRUE, ...){
   file
 }
 
+#' Handle a define target that is a path to a spec file.
+#' 
+#' Handles a path to a spec file by redirecting to corresponding .csv.  Error if x does not exist.
+#' 
+#' @param x path to a spec file
+#' @param tag short name
+#' @param dir directory for storing artifact
+#' @param subdir subdirectory relative to dir for storing artifact
+#' @param des description of item
+#' @param copy should x be copied to dir(/subdir)?
+#' @param ... passed along
+#' 
 .handle.spec <- function(x,tag,dir,subdir,des,copy,...){
   x  <- sub(y,'\\.spec$','.csv')
   stopifnot(file.exists(x))
   class(x) <- 'csv' %u% class(x)
   .handle(x,tag=tag,dir=dir,subdir=subdir,des=des,copy=copy,...)
 }
+
+#' Handle a define target that is a path to an xpt file.
+#' 
+#' Handles a path to an xpt file.  File must exist and contain 
+#' a single table.  Warnings are issued if des does not match
+#' SAS table label or tag does not match SAS storage name.  SAS
+#' column labels are harvested for pdf documentation.
+
+#' @param x path to a csv file
+#' @param tag short name
+#' @param dir directory for storing artifact
+#' @param subdir subdirectory relative to dir for storing artifact
+#' @param des description of item
+#' @param copy should x be copied to dir(/subdir)?
+#' @param ... passed along
+#' 
 .handle.xpt <- function(x,tag,dir,subdir,des,copy,...){
   file <- read.xport(file=x,as.list=TRUE) # file is list of data.frame
   if(length(file) != 1) stop('expecting a single data.frame from ',x)
@@ -191,18 +337,90 @@ as.labeled.data.frame <- function(x, label, spec, check=TRUE, ...){
   list(x=x,tag=tag,des=des,file=file,spec=spec)                                 
 }
 
+#' Handle a define target that is a path to a text file.
+#' 
+#' Handles a path to a text file.
+
+#' @param x path to a text file
+#' @param tag short name
+#' @param dir directory for storing artifact
+#' @param subdir subdirectory relative to dir for storing artifact
+#' @param des description of item
+#' @param copy should x be copied to dir(/subdir)?
+#' @param ... passed along
+#' 
+
 .handle.txt <- function(x,tag,dir,subdir,des,copy,...){
   file <-if(copy) .copy(x=x,tag=tag,dir=dir,subdir=subdir,ext='.txt',...) else as.character(NA)
   list(x=x,tag=tag,des=des,file=file,spec=NA)
 }
+
+#' Handle a define target by default.
+#' 
+#' Handles a path to a file by calling the (default) handler for txt.
+#' the txt extension will be enforced.
+
+#' @param x path to a file
+#' @param tag short name
+#' @param dir directory for storing artifact
+#' @param subdir subdirectory relative to dir for storing artifact
+#' @param des description of item
+#' @param copy should x be copied to dir(/subdir)?
+#' @param ... passed along
+#' 
+
 .handle.default <- function(x,tag,dir,subdir,des,copy,...){
   .handle.txt(x=x,tag=tag,dir=dir,subdir=subdir,des=des,copy=copy,...)
 }
 
+
+#' Define objects per FDA guidance.
+#' 
+#' Defines a set of objects in a manner intended to comply with FDA guidance.
+#' 
+#' @param x object(s) to be defined
+#' @param ... further arguments
+
 define <- function(x,...)UseMethod('define')
+
+
+#'  Define a set of files per FDA guidance.
+#'  
+#'  Defines a set of files in a manner intended to comply with 
+#'  FDA guidance on submission of study data and related documentation.
+#'  In particular, files in csv format are converted to SAS Transport,
+#'  ASCII file extensions are coerced to txt, files are copied to a 
+#'  directory tree, and define.pdf is created at the top level to
+#'  describe the files in more detail.
+#'  
+#'  tag is taken by default as the names of x, but may be supplied explicitly.
+#'  The following should have the same length as x: tag, description, subdir.
+#'  subdir may also be length one.
+#'  
+#  @seealso \url{http://www.fda.gov/downloads/Drugs/DevelopmentApprovalProcess/FormsSubmissionRequirements/ElectronicSubmissions/UCM163565.pdf}
+#  @seealso \url{http://www.fda.gov/downloads/ForIndustry/DataStandards/StudyDataStandards/UCM312964.pdf}
+#'  @seealso \url{http://tinyurl.com/fda-pdf-spec-4-0}
+#'  @seealso \url{http://tinyurl.com/fda-study-data-spec-2-0}
+#'  
+#'  @param x paths to existing files to be documented; possibly a named character vector
+#'  @param stem the base of the file name for the pdf to be created
+#'  @param tag short object names for each element of x; appears in pdf menu, and as table name in XPT file
+#'  @param description informative labels for each element of x
+#'  @param title a title to appear in the pdf
+#'  @param short a short title to appear in the upper left pdf header 
+#'  @param sponsor name of study sponsor to appear in the upper right pdf header
+#'  @param program name of drug development program to appear in lower right pdf header
+#'  @param protocol name(s) of relevant study protocols to appear in lower left pdf header
+#'  @param consultant name of author to appear italicized in left pdf footer
+#'  @param logo file path for logo to include on cover page
+#'  @param dir path to directory in which to place pdf and copied (transformed) files
+#'  @param subdir path to subdirectories to which to copy each (transformed) file represented by x
+#'  @param clear should dir be deleted if it exists?
+#'  @param ...
+
 define.character<- function(
   x, # possibly named
-  stem,
+  stem = 'define',
   tag = names(x),
   description = basename(x),
   title = dirname(x[[1]]),
@@ -212,9 +430,9 @@ define.character<- function(
   protocol = '',
   consultant = '',
   logo = NULL,
-  dir = '.',
-  clear = TRUE,
+  dir = './define',
   subdir = '.', # use NULL to suppress archiving, or supply length(x) paths
+  clear = TRUE,
   ...  
 ){
   if(clear)unlink(dir, recursive=TRUE,force=TRUE)

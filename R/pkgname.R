@@ -14,4 +14,7 @@
 #'
 #' @docType package
 #' @name define-package
+#' @import SASxport
+#' @import methods
+#' @import metrumrg
 NULL
