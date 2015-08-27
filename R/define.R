@@ -1,6 +1,3 @@
-library(metrumrg)
-library(SASxport)
-
 #' Generate a latex hyperlink.
 #' 
 #' Generates a latex hyperlink.
@@ -79,6 +76,7 @@ library(SASxport)
 #' 
 #' Returns a list of vetted artifacts (spec or char corresponding to x)
 #' that represent a submission object for further processing.
+
 as.submission <- function(x,...)UseMethod('as.submission') 
 
 #' Coerce a submission to class submission.
@@ -95,6 +93,9 @@ as.submission.submission <- function(x,...)x
 #' @param description informative multi-word label for each element of x
 #' @param dir parent directory for placement of submission artifacts
 #' @param subdir optional subdirectories relative to dir for each submission artifact
+#' 
+#' @return a list of artifacts each having attributes: x, tag, des, file, spec
+#' 
 as.submission.character <- function(
   x, # xpt, csv, spec, txt, other
   tag = names(x),
@@ -161,6 +162,7 @@ as.labeled <- function(x,...)UseMethod('as.labeled')
 #' @param x length-one filename for csv-formatted data file
 #' @param spec length-one filename for spec-formated file
 #' @param ... passed to as.labeled.dat
+#' 
 as.labeled.character <- function(x,spec,...){
   dat <- read.csv(x,as.is=TRUE,na.strings=c('','.'))
   if(missing(spec)) spec <- read.spec(sub('\\.csv$','.spec',x))
@@ -182,6 +184,7 @@ as.labeled.character <- function(x,spec,...){
 #' @param spec a spec (specification) data.frame containing column labels
 #' @param check should the data.frame be required to match its specification?
 #' @param ... ignored
+#' 
 as.labeled.data.frame <- function(x, label, spec, check=TRUE, ...){
   spec <- as.spec(spec)
   if(check) stopifnot(x %matches% spec)
@@ -373,10 +376,9 @@ as.labeled.data.frame <- function(x, label, spec, check=TRUE, ...){
   .handle.txt(x=x,tag=tag,dir=dir,subdir=subdir,des=des,copy=copy,...)
 }
 
-
 #' Define objects per FDA guidance.
 #' 
-#' Defines a set of objects in a manner intended to comply with FDA guidance.
+#' Defines (documents) a set of objects in a manner intended to comply with FDA guidance.
 #' 
 #' @param x object(s) to be defined
 #' @param ... further arguments
@@ -386,16 +388,21 @@ define <- function(x,...)UseMethod('define')
 
 #'  Define a set of files per FDA guidance.
 #'  
-#'  Defines a set of files in a manner intended to comply with 
+#'  Defines (documents) a set of files in a manner intended to comply with 
 #'  FDA guidance on submission of study data and related documentation.
-#'  In particular, files in csv format are converted to SAS Transport,
-#'  ASCII file extensions are coerced to txt, files are copied to a 
-#'  directory tree, and define.pdf is created at the top level to
-#'  describe the files in more detail.
+#'  In particular, files in csv format are converted to SAS Transport (xpt),
+#'  extensions for other files (presumably ASCII) are coerced to txt, 
+#'  files are copied to a directory tree, and 
+#'  define.pdf is created at the top level to describe the files in more detail.
 #'  
 #'  tag is taken by default as the names of x, but may be supplied explicitly.
 #'  The following should have the same length as x: tag, description, subdir.
-#'  subdir may also be length one.
+#'  subdir may also be length one. Other arguments have length one.
+#'  
+#'  The function iterates across the elements of x to create a submission
+#'  object, a side effect of which is to copy (conditionally, transformed) each 
+#'  corresponding file to (subdir of) dir.  The submission object is then
+#'  converted to a pdf, written directly to dir as <stem>.pdf.
 #'  
 #  @seealso \url{http://www.fda.gov/downloads/Drugs/DevelopmentApprovalProcess/FormsSubmissionRequirements/ElectronicSubmissions/UCM163565.pdf}
 #  @seealso \url{http://www.fda.gov/downloads/ForIndustry/DataStandards/StudyDataStandards/UCM312964.pdf}
@@ -407,31 +414,35 @@ define <- function(x,...)UseMethod('define')
 #'  @param tag short object names for each element of x; appears in pdf menu, and as table name in XPT file
 #'  @param description informative labels for each element of x
 #'  @param title a title to appear in the pdf
-#'  @param short a short title to appear in the upper left pdf header 
-#'  @param sponsor name of study sponsor to appear in the upper right pdf header
-#'  @param program name of drug development program to appear in lower right pdf header
-#'  @param protocol name(s) of relevant study protocols to appear in lower left pdf header
-#'  @param consultant name of author to appear italicized in left pdf footer
+#'  @param lhead1 upper left pdf header, e.g. short title
+#'  @param lhead2 lower left pdf header, e.g. relevant protocols
+#'  @param rhead1 upper right pdf header, e.g. name of study sponsor
+#'  @param rhead2 lower right pdf header, e.g. name of drug development program
+#'  @param lfoot italicized left pdf footer, e.g. name of responsible party
+#'  @param rfoot right footer, today's date by default
 #'  @param logo file path for logo to include on cover page
 #'  @param dir path to directory in which to place pdf and copied (transformed) files
-#'  @param subdir path to subdirectories to which to copy each (transformed) file represented by x
+#'  @param subdir path to subdirectories to which to copy each (transformed) file represented by x; use NULL to suppress archiving
 #'  @param clear should dir be deleted if it exists?
-#'  @param ...
+#'  @param ... passed to as.submission and as.pdf
+#'  
+#'  @return invisible result of as.pdf.  Used for side effects.
 
 define.character<- function(
-  x, # possibly named
+  x,
   stem = 'define',
   tag = names(x),
   description = basename(x),
   title = dirname(x[[1]]),
-  short = title,
-  sponsor = '',
-  program = '',
-  protocol = '',
-  consultant = '',
+  lhead1 = title,
+  lhead2 = '',
+  rhead1 = '',
+  rhead2 = '',
+  lfoot = '',
+  rfoot = '\\mydate \\today',
   logo = NULL,
   dir = './define',
-  subdir = '.', # use NULL to suppress archiving, or supply length(x) paths
+  subdir = '.', 
   clear = TRUE,
   ...  
 ){
@@ -444,17 +455,17 @@ define.character<- function(
     length(dir) == 1,
     is.null(subdir) | length(subdir) %in% c(1,length(x)),
     is.character(title),
-    is.character(short),
+    is.character(lhead1),
     length(title) == 1,
-    length(short) == 1,
-    length(sponsor) == 1,
-    length(consultant) == 1
+    length(lhead1) == 1,
+    length(rhead1) == 1,
+    length(lfoot) == 1
   )
   description <- as.character(description)
   title <- as.character(title)
-  short <- as.character(short)
-  sponsor <- as.character(sponsor)
-  consultant <- as.character(consultant)
+  lhead1 <- as.character(lhead1)
+  rhead1 <- as.character(rhead1)
+  lfoot <- as.character(lfoot)
   
   y <- as.submission(
     x=x,
@@ -467,26 +478,58 @@ define.character<- function(
   z <- as.document(   #. i.e. as.document.submission
     y, 
     title=title,
-    short=short,
-    sponsor=sponsor,
-    program=program,
-    protocol=protocol,
+    lhead1=lhead1,
+    lhead2=lhead2,
+    rhead1=rhead1,
+    rhead2=rhead2,
     logo=logo,
-    consultant=consultant,
+    lfoot=lfoot,
     ...
   )
   as.pdf(z,stem=stem,dir=dir,...)
 }
 
+#' Coerce a submission object to a document.
+#' 
+#' Coerces a submission object to a document.
+#' 
+#' Makes a pdf-ready character object representing a latex document.  
+#' Essentially a wrapper for as.document.  Title, logo, headers,
+#' footers, date are placed on the title page.  The second 
+#' page has a menu (table) of defined objects that creates bi-directional links
+#' to any defined data tables.  Links are also created to the storage locations
+#' relative to the (resulting) define.pdf.  Following pages table the attributes
+#' of data items in any datasets. 
+#' 
+#' @param x a list of artifacts each having attributes: x, tag, des, file, spec
+#' @param title a title for the document
+#' @param lhead1 left header 1, e.g. short title
+#' @param lhead2 left header 2, e.g. relevant protocol(s)
+#' @param rhead1 right header 1, e.g. sponsor
+#' @param rhead2 right header 2, e.g. development program
+#' @param lfoot left footer (italicized), e.g. responsible party
+#' @param rfoot right footer, today's date by default
+#' @param logo file path for title page logo
+#' @param morePreamble passed to \code{\link{as.document.character}}
+#' @param geoLeft passed to \code{\link{as.document.character}}
+#' @param geoRight passed to \code{\link{as.document.character}}
+#' @param geoTop passed to \code{\link{as.document.character}}
+#' @param geoBottom passed to \code{\link{as.document.character}}
+#' @param pagestyle passed to \code{\link{as.document.character}}
+#' @param thispagestyle passed to \code{\link{as.document.character}}
+#' @param ... passed to as.define, tabular, as.document.character
+#' 
+#' 
 as.document.submission <- function (
   x, #list(x,tag,des,file,spec)
   title,
-  short=title,
-  sponsor='',
-  program='',
-  protocol='',
+  lhead1=title,
+  lhead2='',
+  rhead1='',
+  rhead2='',
+  lfoot='',
+  rfoot='\\mydate \\today',
   logo=NULL,  
-  consultant='',
   morePreamble = c(
     command("usepackage", args = "longtable"), 
     command("usepackage", args = "hyperref", options='breaklinks'), 
@@ -500,9 +543,9 @@ as.document.submission <- function (
     "\\hypersetup{colorlinks=true,filecolor=blue,linkcolor=blue}",
     command("usepackage", args = c("fancyhdr,lastpage")),
     command('pagestyle',args='fancy'),
-    command("lhead", args = paste(short,'\\\\',protocol,collapse=' ')),
-    command("rhead", args = paste(program,'\\\\',sponsor,collapse=' ')),
-    command("lfoot", args = command("textit",args= consultant)),
+    command("lhead", args = paste(lhead1,'\\\\',lhead2,collapse=' ')),
+    command("rhead", args = paste(rhead2,'\\\\',rhead1,collapse=' ')),
+    command("lfoot", args = command("textit",args= lfoot)),
     command("rfoot", args = '\\mydate \\today'),
     command("date",  args = '\\mydate \\today'),
     command("title", args=title)    
@@ -568,6 +611,17 @@ as.document.submission <- function (
   doc
 }
 
+#' Make names for a dataset that are unique and follow SAS naming conventions.
+#' 
+#' Makes names for a dataset that are unique and follow SAS naming conventions.
+#' Modeled after SASxport::makeSasNames, but handling special cases.
+#' 
+#' @param names existing column names
+#' @param nchar limit on number of characters
+#' @param maxPasses limit on number of reconciliation attempts
+#' @param quiet should messages be suppressed?
+#' 
+#' @return character
 makesasnames <-function (names, nchar = 8, maxPasses = 10, quiet = FALSE) {
   names <- as.character(names)
   names <- toupper(names)
@@ -600,7 +654,24 @@ makesasnames <-function (names, nchar = 8, maxPasses = 10, quiet = FALSE) {
   varNames
 }
 
+
+#' Recode an encoded object.
+#' 
+#' Recodes an encoded object.
+#' 
+#' @param x object of dispatch
+#' @param ... passed along
+#' 
+#' @seealso \code{\link{encode}}
 recode <- function(x,...)UseMethod('recode')
+
+#' Recode a single string.
+#' 
+#' Recodes a single string.
+#' @param x string to be recoded
+#' @param sep separator to use for output
+#' @return character
+#' @seealso \code{\link{recode.character}}
 .recode <- function(x,sep=substr(x,1,1),...){ # for a single character string
   stopifnot(length(x)==1)
   codes <- codes(x)
@@ -608,6 +679,21 @@ recode <- function(x,...)UseMethod('recode')
   decodes[!is.na(decodes) & decodes == codes] <- NA
   encode(codes, decodes, sep=sep,...)
 }
+#' Recode an encoded character vector, dropping noninformative labels.
+#' 
+#' Recodes an encoded character vector.
+#' 
+#' \code{\link{specification}} creates a template spec object
+#' corresponding to a data frame.  Not able to guess factor
+#' level decodes (labels) or column descriptions (e.g. SAS labels)
+#' it supplies defaults by repeating the argument values. These have
+#' value for development, but not for reporting.  This function
+#' drops non-informative decodes.
+#' 
+#' @param x vector of strings that represent encodings
+#' @params ... passed to sapply
+#' @return character
+#' @seealso \code{\link{.recode}}
 recode.character <- function(x,...)sapply(x,.recode,USE.NAMES=FALSE,...)
 
 
