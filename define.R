@@ -1,9 +1,10 @@
 library(metrumrg)
 library(SASxport)
+
 .hyperlink <- function(label, caption)glue('\\hyperlink{',label,'}{',caption,'}')
 .hypertarget <- function(label, caption)glue('\\hypertarget{',label,'}{',caption,'}')
 
-defineMenu <- function(
+.menu <- function(
   dname,
   title,
   desc,
@@ -22,11 +23,12 @@ defineMenu <- function(
   ...
 ){
   fragment <- function(x)gsub('/','/\\\\hspace{0pt}',x)
+  escape <- function(x)gsub('_','\\\\_',x)
   menu <- data.frame(
     File=ifelse(spec,.hyperlink(desc,dname),dname),
     Description=ifelse(spec, .hypertarget(dname,desc),desc),
-    Location=paste('\\href{run:./',file,'}{',fragment(file),'}',sep=''),
-    Source = ifelse(is.na(src),'',src)
+    Location=paste('\\href{run:./',file,'}{',fragment(escape(file)),'}',sep=''),
+    Source = ifelse(is.na(src),'',fragment(escape(src)))
   )
   if(headerBold) names(menu) <- glue('\\textbf{',names(menu),'}')
   menu <- tabular.data.frame(
@@ -80,9 +82,6 @@ as.submission.character <- function(
     length(subdir) == length(x) | is.null(subdir) 
   )
   description <- as.character(description)
-#  title <- as.character(title)
-#  short <- as.character(short)
-#  sponsor <- as.character(sponsor)
   
   # case csv:  if spec enforce/use spec else make/enforce/use spec; copy as xpt
   # case xpt:  make/enforce/use spec use labels; copy
@@ -90,10 +89,10 @@ as.submission.character <- function(
   # case txt:  copy as is
   # case other:copy as txt
   classify <- function(x)structure(x,class=.extension(x) %u% class(x))
-
+  
   y <- lapply(x, classify)
   dups <- duplicated(.base(x))
-  if(any(dups))stop('probable duplicate specification, e.g.',x[dups][[1]])
+  if(any(dups))warning('possible duplicate specification, e.g.',x[dups][[1]])
   
   out <- lapply(y,.handleEach,ref=x,tag=tag,dir=dir,subdir=subdir,des=description,copy=!is.null(subdir),...)
   class(out) <- 'submission'
@@ -111,6 +110,7 @@ as.labeled <- function(x,...)UseMethod('as.labeled')
 as.labeled.character <- function(x,spec,...){
   dat <- read.csv(x,as.is=TRUE,na.strings=c('','.'))
   if(missing(spec)) spec <- read.spec(sub('\\.csv$','.spec',x))
+  #spec$guide[encoded(spec)] <- recode(spec$guide[encoded(spec)])
   as.labeled(dat,spec=spec,...)
 }
 as.labeled.data.frame <- function(x, label, spec, check=TRUE, ...){
@@ -145,8 +145,18 @@ as.labeled.data.frame <- function(x, label, spec, check=TRUE, ...){
     write.spec(spec,file)
   }
   stopifnot(x %matches% spec)
-  file <- if(copy) .copy(x=x,tag=tag,dir=dir,subdir=subdir,des=des,spec=spec,export=TRUE,...) else as.character(NA)
-  list(x=x,tag=tag,des=des,file=file,spec=spec)
+  spec$guide[encoded(spec)] <- recode(spec$guide[encoded(spec)]) # remove placeholder decodes
+  file <- as.character(NA)
+  if(copy){ 
+    file <- .copy(x=x,tag=tag,dir=dir,subdir=subdir,des=des,spec=spec,export=TRUE,...)
+    path <- file.path(dir,file)
+    if(!file.exists(path)) warning(path,' seems not to have been created') else {
+      sasnames <- lookup.xport(file.path(dir,file))[[1]]$name
+      if(length(sasnames) != length(spec$column)) stop('item count mismatch between specification and XPT file')
+      spec$column <- sasnames
+    }
+    list(x=x,tag=tag,des=des,file=file,spec=spec)
+  }
 }
 
 .copy <- function(x,tag,dir,subdir, des=NULL, spec=NULL, overwrite=TRUE, export = FALSE, ext=if(export) '.xpt' else '.txt', ...){
@@ -203,9 +213,11 @@ define.character<- function(
   consultant = '',
   logo = NULL,
   dir = '.',
+  clear = TRUE,
   subdir = '.', # use NULL to suppress archiving, or supply length(x) paths
   ...  
 ){
+  if(clear)unlink(dir, recursive=TRUE,force=TRUE)
   if(!file.exists(dir)) dir.create(dir,recursive=TRUE)
   stopifnot(file.exists(dir))
   stopifnot(
@@ -285,7 +297,7 @@ as.document.submission <- function (
   thispagestyle = NULL,
   ...
 ) {
-  menu <- defineMenu(
+  menu <- .menu(
     title = title,
     dname = sapply(x,`[[`,'tag'),
     desc =  sapply(x,`[[`,'des'),
@@ -302,7 +314,7 @@ as.document.submission <- function (
     spec <- x[['spec']]
     des <- x[['des']]
     def <- as.define(spec,sep=sep,collapse=collapse,...)
-   #tab <- tabular(def,caption = caption,...)
+    #tab <- tabular(def,caption = caption,...)
     tab <- tabular(def,...)
     tab <- wrap(tab,'center')
     link <- .hyperlink(caption,des)
@@ -318,7 +330,7 @@ as.document.submission <- function (
     menu,
     specifics
   )
-    
+  
   doc <- as.document(
     morePreamble = morePreamble, 
     prolog = c(
@@ -370,6 +382,27 @@ makesasnames <-function (names, nchar = 8, maxPasses = 10, quiet = FALSE) {
   varNames
 }
 
-  
-  
-  
+recode <- function(x,...)UseMethod('recode')
+.recode <- function(x,sep=substr(x,1,1),...){ # for a single character string
+  stopifnot(length(x)==1)
+  codes <- codes(x)
+  decodes <- decodes(x)
+  decodes[!is.na(decodes) & decodes == codes] <- NA
+  encode(codes, decodes, sep=sep,...)
+}
+recode.character <- function(x,...)sapply(x,.recode,USE.NAMES=FALSE,...)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
