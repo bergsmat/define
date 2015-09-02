@@ -1,20 +1,57 @@
 #' Generate a latex hyperlink.
 #' 
 #' Generates a latex hyperlink.
-.hyperlink <- function(label, caption)glue('\\hyperlink{',label,'}{',caption,'}')
+.hyperlink <- function(label, caption)command('hyperlink',args=c(label,.fragment(.escape(caption))))
 
 #' Generate a latex hypertarget.
 #' 
 #' Generates a latex hypertarget.
-.hypertarget <- function(label, caption)glue('\\hypertarget{',label,'}{',caption,'}')
+.hypertarget <- function(label, caption)command('hypertarget',args=c(label,.fragment(.escape(caption))))
+
+#' Generate a latex executeref.
+#' 
+#' Generates a latex executeref.
+.executeref <- function(file)command('href',args=c(.execute(file),.fragment(.escape(file))))
+
+#' Generate a latex staticref.
+#' 
+#' Generates a latex staticref (unlinked) to a file path.
+.staticref <- function(file) .fragment(.escape(file))
+
+#' Generate an executable path.
+#' 
+#' Generates an executable path.
+.execute <- function(file)glue('run:./',file)
+
+#' Break up a file path for wrapping in a table.
+#' 
+#' Breaks up a file path for wrapping in a table.
+.fragment <- function(x)gsub('/','/\\\\hspace{0pt}',x)
+
+#' Format special characters for latex rendering.
+#' 
+#' Formats special characters for latex rendering.
+.escape <- function(x){
+  x <- gsub('_','\\_',x,fixed=TRUE) # ok
+  x <- gsub('#','\\#',x,fixed=TRUE) # problematic
+  x <- gsub('$','\\$',x,fixed=TRUE) # ok
+  x <- gsub('%','\\%',x,fixed=TRUE) # problematic
+  x <- gsub('&','\\&',x,fixed=TRUE) # ok
+  x <- gsub('*','\\*',x,fixed=TRUE) # problematic
+  x <- gsub('^','\\^',x,fixed=TRUE) # ok
+  x <- gsub('?','\\?',x,fixed=TRUE) # problematic
+  x
+}
+
+
 
 #' Create latex content for define.doc menu.
 #' 
 #' Creates latex content for define.doc menu.
 .menu <- function(
-  dname,
+  tag,
   title,
-  desc,
+  des,
   file,
   src,
   spec,
@@ -29,25 +66,25 @@
   headerBold = TRUE,
   ...
 ){
-  fragment <- function(x)gsub('/','/\\\\hspace{0pt}',x)
-  escape <- function(x){
-    x <- gsub('_','\\\\_',x,fixed=TRUE)
-    x <- gsub('#','\\\\#',x,fixed=TRUE)
-    x <- gsub('$','\\\\$',x,fixed=TRUE)
-    x <- gsub('%','\\\\%',x,fixed=TRUE)
-    x <- gsub('&','\\\\&',x,fixed=TRUE)
-    x <- gsub('*','\\\\*',x,fixed=TRUE)
-    x <- gsub('^','\\\\^',x,fixed=TRUE)
-    x <- gsub('?','\\\\_',x,fixed=TRUE)
-    x
-  }
-  
   menu <- data.frame(
-    File=ifelse(spec,.hyperlink(desc,dname),dname),
-    Description=ifelse(spec, .hypertarget(dname,desc),desc),
-    Location=paste('\\href{run:./',file,'}{',fragment(escape(file)),'}',sep=''),
-    Source = ifelse(is.na(src),'',fragment(escape(src)))
+    File=ifelse(
+      spec,
+      .hyperlink(des,tag),
+      tag
+    ),
+    Description=ifelse(
+      spec, 
+      .hypertarget(tag,des),
+      des
+    ),
+    Location=.executeref(file),
+    Source = ifelse(
+      is.na(src),
+      '',
+      .staticref(src)
+    )
   )
+  
   if(headerBold) names(menu) <- glue('\\textbf{',names(menu),'}')
   menu <- tabular.data.frame(
     menu,
@@ -651,8 +688,8 @@ as.document.submission <- function (
 ) {
   menu <- .menu(
     title = title,
-    dname = sapply(x,`[[`,'tag'),
-    desc =  sapply(x,`[[`,'des'),
+    tag = sapply(x,`[[`,'tag'),
+    des =  sapply(x,`[[`,'des'),
     file =  sapply(x,`[[`,'file'),
     src  =  sapply(x,`[[`,'x'),
     spec =  sapply(x,function(i)!identical(NA,i[['spec']]))
