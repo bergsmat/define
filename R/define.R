@@ -181,7 +181,7 @@ as.submission.character <- function(
   
   y <- lapply(x, classify)
   dups <- duplicated(.base(x))
-  if(any(dups))warning('possible duplicate specification, e.g.',x[dups][[1]])
+  #if(any(dups))warning('possible duplicate specification, e.g.',x[dups][[1]])
   
   out <- lapply(y,.handleEach,ref=x,tag=tag,dir=dir,subdir=subdir,des=description,copy=!is.null(subdir),...)
   class(out) <- 'submission'
