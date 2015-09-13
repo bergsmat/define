@@ -1,27 +1,48 @@
 #' Generate a latex hyperlink.
 #' 
 #' Generates a latex hyperlink.
-.hyperlink <- function(label, caption)command('hyperlink',args=c(label,.fragment(.escape(caption))))
+.hyperlink <- function(label, caption){
+  stopifnot(length(label) == length(caption))
+  sapply(
+    seq_along(label),
+    function(i)command('hyperlink',args=c(label[[i]],.fragment(.escape(caption[[i]]))))
+  )
+}
 
 #' Generate a latex hypertarget.
 #' 
 #' Generates a latex hypertarget.
-.hypertarget <- function(label, caption)command('hypertarget',args=c(label,.fragment(.escape(caption))))
+.hypertarget <- function(label, caption){
+  stopifnot(length(label) == length(caption))
+  sapply(
+    seq_along(label),
+    function(i)command('hypertarget',args=c(label[[i]],.fragment(.escape(caption[[i]]))))
+  )
+}
 
 #' Generate a latex executeref.
 #' 
 #' Generates a latex executeref.
-.executeref <- function(file)command('href',args=c(.execute(file),.fragment(.escape(file))))
+.executeref <- function(file)sapply(
+  seq_along(file),
+  function(i)command('href',args=c(.execute(file[[i]]),.fragment(.escape(file[[i]]))))
+)
 
 #' Generate a latex staticref.
 #' 
 #' Generates a latex staticref (unlinked) to a file path.
-.staticref <- function(file) .fragment(.escape(file))
+.staticref <- function(file)sapply(
+  seq_along(file),
+  function(i).fragment(.escape(file[[i]]))
+)
 
 #' Generate an executable path.
 #' 
 #' Generates an executable path.
-.execute <- function(file)glue('run:./',file)
+.execute <- function(file)sapply(
+  seq_along(file),
+  function(i)glue('run:./',file[[i]])
+)
 
 #' Break up a file path for wrapping in a table.
 #' 
