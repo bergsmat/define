@@ -7,7 +7,8 @@
 \usage{
 as.labeled(x, ...)
 
-\method{as.labeled}{character}(x, spec, ...)
+\method{as.labeled}{character}(x, spec, as.is = TRUE, na.strings = c("",
+  "."), check.names = TRUE, rename = function(x, ...) x, ...)
 }
 \arguments{
 \item{x}{length-one filename for csv-formatted data file}
@@ -15,6 +16,14 @@ as.labeled(x, ...)
 \item{...}{passed to as.labeled.dat}
 
 \item{spec}{length-one file name for spec}
+
+\item{as.is}{passed to read.csv}
+
+\item{na.strings}{passed to read.csv}
+
+\item{check.names}{passed to read.csv}
+
+\item{rename}{a function with arguments x, ... to pre-process column names}
 }
 \description{
 Coerces to class labeled.

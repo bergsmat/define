@@ -243,12 +243,19 @@ as.labeled <- function(x,...)UseMethod('as.labeled')
 #' 
 #' @param x length-one filename for csv-formatted data file
 #' @param spec length-one file name for spec
+#' @param as.is passed to read.csv
+#' @param na.strings passed to read.csv
+#' @param check.names passed to read.csv
+#' @param rename a function with arguments x, ... to pre-process column names
 #' @param ... passed to as.labeled.dat
 #' @describeIn as.labeled
 #' @seealso \code{\link{as.labeled.data.frame}}
 #' 
-as.labeled.character <- function(x,spec,...){
-  dat <- read.csv(x,as.is=TRUE,na.strings=c('','.'))
+as.labeled.character <- function(x,spec,as.is=TRUE,na.strings=c('','.'),check.names=TRUE,rename = function(x,...)x, ...){
+  dat <- read.csv(x,as.is=as.is,na.strings=na.strings,check.names=check.names)
+  dat[]  <- lapply(dat,function(col) if(is.integer(col)) as.numeric(col) else col)
+  names(dat) <- rename(names(dat))
+  # because labelled integer is stored as character and NA is NA if read as factor but '' if read as.is.
   if(missing(spec)) spec <- metrumrg::read.spec(sub('\\.csv$','.spec',x))
   #spec$guide[encoded(spec)] <- recode(spec$guide[encoded(spec)])
   as.labeled(dat,spec=spec,...)
