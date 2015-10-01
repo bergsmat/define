@@ -245,7 +245,6 @@ as.labeled <- function(x,...)UseMethod('as.labeled')
 #' @param spec length-one file name for spec
 #' @param as.is passed to read.csv
 #' @param na.strings passed to read.csv
-#' @param check.names passed to read.csv
 #' @param rename a function with arguments x, ... to pre-process column names
 #' @param ... passed to as.labeled.dat
 #' @describeIn as.labeled

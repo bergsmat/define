@@ -22,8 +22,6 @@ as.labeled(x, ...)
 \item{na.strings}{passed to read.csv}
 
 \item{rename}{a function with arguments x, ... to pre-process column names}
-
-\item{check.names}{passed to read.csv}
 }
 \description{
 Coerces to class labeled.
