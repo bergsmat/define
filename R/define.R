@@ -251,8 +251,15 @@ as.labeled <- function(x,...)UseMethod('as.labeled')
 #' @describeIn as.labeled
 #' @seealso \code{\link{as.labeled.data.frame}}
 #' 
-as.labeled.character <- function(x,spec,as.is=TRUE,na.strings=c('','.'),check.names=TRUE,rename = function(x,...)x, ...){
-  dat <- read.csv(x,as.is=as.is,na.strings=na.strings,check.names=check.names)
+as.labeled.character <- function(
+  x,
+  spec,
+  as.is=TRUE,
+  na.strings=c('','.'),
+  rename = function(x,...)x, 
+  ...
+){
+  dat <- read.csv(x,as.is=as.is,na.strings=na.strings)
   dat[]  <- lapply(dat,function(col) if(is.integer(col)) as.numeric(col) else col)
   names(dat) <- rename(names(dat))
   # because labelled integer is stored as character and NA is NA if read as factor but '' if read as.is.
