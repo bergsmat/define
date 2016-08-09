@@ -271,8 +271,8 @@ as.labeled.character <- function(
 #' 
 #' Coerces data.frame to labeled.
 #' 
-#' Numeric values less than 1e-70 are coerced to zero to solve SAS encoding issues.
-#' Column names are forced unique and forced SAS-compliant with \code{]link{makesasnames}}.
+#' Positive numeric values less than 1e-70 are coerced to zero to solve SAS encoding issues.
+#' Column names are forced unique and forced SAS-compliant with \code{link{makesasnames}}.
 #' Labels are added to the data.frame column names, and to the data.frame itself.
 #' 
 #' @method as.labeled data.frame
@@ -290,7 +290,7 @@ as.labeled.data.frame <- function(x, label, spec, check=TRUE, ...){
     var <- x[[col]]
     label <- with(spec, label[column == col])
     Hmisc::label(var) <- label
-    if(is.numeric(var))var[var < 1e-70] <- 0
+    if(is.numeric(var))var[var < 1e-70 & var > 0] <- 0
     var
   })
   Hmisc::label(x) <- label

@@ -5,8 +5,13 @@ Version: 0.1
 Date: 2015-08-27
 Author: Tim Bergsma
 Maintainer: Tim Bergsma <bergsmat@gmail.com>
-Description: Creates a directory of archived files with a descriptive pdf document at the root level.
+Description: Creates a directory of archived files with a descriptive pdf
+    document at the root level.
 License: GPL-2
 LazyData: TRUE
-Imports: Hmisc, SASxport
-Depends: metrumrg
+Imports:
+    Hmisc,
+    SASxport
+Depends:
+    metrumrg
+RoxygenNote: 5.0.1
