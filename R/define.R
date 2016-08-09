@@ -168,7 +168,7 @@ as.submission.submission <- function(x,...)x
 #' @param ... passed along to handlers
 #' @export
 #' @return a list of artifacts each having attributes: x, tag, des, file, spec
-#' @describeIn as.submission
+#' @describeIn as.submission character method for as.submission
 #' 
 as.submission.character <- function(
   x, # xpt, csv, spec, txt, other
@@ -222,7 +222,7 @@ as.xport <- function(x, ...)UseMethod('as.xport')
 #' @param file where to write the data.frame
 #' @param autogen.formats passed to write.xport
 #' @param ... passed to write.xport
-#' @describeIn as.xport
+#' @describeIn as.xport labeled method for as.xport
 #' 
 as.xport.labeled <- function(x,name,file,autogen.formats=FALSE,...){
   y <- list(x)
@@ -247,7 +247,7 @@ as.labeled <- function(x,...)UseMethod('as.labeled')
 #' @param na.strings passed to read.csv
 #' @param rename a function with arguments x, ... to pre-process column names
 #' @param ... passed to as.labeled.dat
-#' @describeIn as.labeled
+#' @describeIn as.labeled data.frame method for as.labeled
 #' @seealso \code{\link{as.labeled.data.frame}}
 #' 
 as.labeled.character <- function(
@@ -340,7 +340,7 @@ as.labeled.data.frame <- function(x, label, spec, check=TRUE, ...){
 #' @param des description of item
 #' @param copy should x be copied to dir(/subdir)?
 #' @param ... passed along
-#' @describeIn .handle
+#' @describeIn .handle csv method for .handle
 #' 
 .handle.csv <- function(x,tag,dir,subdir,des,copy,...){
   file <- sub('\\.csv$','.spec',x)
@@ -402,7 +402,7 @@ as.labeled.data.frame <- function(x, label, spec, check=TRUE, ...){
 #' @param des description of item
 #' @param copy should x be copied to dir(/subdir)?
 #' @param ... passed along
-#' @describeIn .handle
+#' @describeIn .handle spec method for .handle
 #' 
 .handle.spec <- function(x,tag,dir,subdir,des,copy,...){
   x  <- sub(x,'\\.spec$','.csv')
@@ -425,7 +425,7 @@ as.labeled.data.frame <- function(x, label, spec, check=TRUE, ...){
 #' @param des description of item
 #' @param copy should x be copied to dir(/subdir)?
 #' @param ... passed along
-#' @describeIn .handle
+#' @describeIn .handle xpt method for .handle
 #' 
 .handle.xpt <- function(x,tag,dir,subdir,des,copy,...){
   file <- read.xport(file=x,as.list=TRUE) # file is list of data.frame
@@ -452,7 +452,7 @@ as.labeled.data.frame <- function(x, label, spec, check=TRUE, ...){
 #' @param des description of item
 #' @param copy should x be copied to dir(/subdir)?
 #' @param ... passed along
-#' @describeIn .handle
+#' @describeIn .handle txt method for .handle
 #' 
 
 .handle.txt <- function(x,tag,dir,subdir,des,copy,...){
@@ -472,7 +472,7 @@ as.labeled.data.frame <- function(x, label, spec, check=TRUE, ...){
 #' @param des description of item
 #' @param copy should x be copied to dir(/subdir)?
 #' @param ... passed along
-#' @describeIn .handle
+#' @describeIn .handle default method for .handle
 
 .handle.default <- function(x,tag,dir,subdir,des,copy,...){
   .handle.txt(x=x,tag=tag,dir=dir,subdir=subdir,des=des,copy=copy,...)
@@ -533,7 +533,7 @@ define <- function(x,...)UseMethod('define')
 #'  
 #'  @return invisible result of as.pdf.  Used for side effects.
 #'  @export
-#'  @describeIn define
+#'  @describeIn define character method for define
 #'  @examples 
 #'  
 #' code <- "write.csv(x=Theoph,file='theoph.csv',row.names=FALSE,quote=FALSE)"
@@ -855,7 +855,7 @@ recode <- function(x,...)UseMethod('recode')
 #' @param ... passed to sapply
 #' @return character
 #' @export
-#' @describeIn recode
+#' @describeIn recode character method for recode
 recode.character <- function(x,...)sapply(x,.recode,USE.NAMES=FALSE,...)
 
 

@@ -2,13 +2,38 @@
 % Please edit documentation in R/define.R
 \name{recode}
 \alias{recode}
+\alias{recode.character}
 \title{Recode an encoded object.}
 \usage{
 recode(x, ...)
+
+\method{recode}{character}(x, ...)
+}
+\arguments{
+\item{x}{vector of strings that represent encodings}
+
+\item{...}{passed to sapply}
+}
+\value{
+character
 }
 \description{
 Recodes an encoded object.
+
+Recodes an encoded character vector.
 }
+\details{
+\code{\link{specification}} creates a template spec object
+corresponding to a data frame.  Not able to guess factor
+level decodes (labels) or column descriptions (e.g. SAS labels)
+it supplies defaults by repeating the argument values. These have
+value for development, but not for reporting.  This function
+drops non-informative decodes.
+}
+\section{Methods (by class)}{
+\itemize{
+\item \code{character}: character method for recode
+}}
 \seealso{
 \code{\link{encode}}
 }

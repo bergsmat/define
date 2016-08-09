@@ -27,6 +27,6 @@ Coerces labeled to xport.
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{labeled}: 
+\item \code{labeled}: labeled method for as.xport
 }}
 

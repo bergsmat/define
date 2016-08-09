@@ -41,7 +41,7 @@
  
  @return invisible result of as.pdf.  Used for side effects.
  @export
- @describeIn define
+ @describeIn define character method for define
  @examples 
  
 code <- "write.csv(x=Theoph,file='theoph.csv',row.names=FALSE,quote=FALSE)"
@@ -120,7 +120,7 @@ Define a set of files per FDA guidance.
  
  @return invisible result of as.pdf.  Used for side effects.
  @export
- @describeIn define
+ @describeIn define character method for define
  @examples 
  
 code <- "write.csv(x=Theoph,file='theoph.csv',row.names=FALSE,quote=FALSE)"

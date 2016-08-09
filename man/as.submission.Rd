@@ -34,6 +34,6 @@ Converts a character vector of file names to class submission.
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{character}: 
+\item \code{character}: character method for as.submission
 }}
 
