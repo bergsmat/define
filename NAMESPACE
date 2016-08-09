@@ -3,6 +3,7 @@
 S3method(as.document,submission)
 S3method(as.submission,character)
 S3method(as.submission,submission)
+S3method(define,character)
 S3method(recode,character)
 export(as.submission)
 export(define)

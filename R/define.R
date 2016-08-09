@@ -510,31 +510,27 @@ define <- function(x,...)UseMethod('define')
 #'  
 #  @seealso \url{http://www.fda.gov/downloads/Drugs/DevelopmentApprovalProcess/FormsSubmissionRequirements/ElectronicSubmissions/UCM163565.pdf}
 #  @seealso \url{http://www.fda.gov/downloads/ForIndustry/DataStandards/StudyDataStandards/UCM312964.pdf}
-#'  @seealso \url{http://tinyurl.com/fda-pdf-spec-4-0}
-#'  @seealso \url{http://tinyurl.com/fda-study-data-spec-2-0}
+#' @seealso \url{http://tinyurl.com/fda-pdf-spec-4-0}
+#' @seealso \url{http://tinyurl.com/fda-study-data-spec-2-0}
 #'  
-#'  @param x paths to existing files to be documented; possibly a named character vector
-#'  @param stem the base of the file name for the pdf to be created
-#'  @param tag short object names for each element of x; appears in pdf menu, and as table name in XPT file
-#'  @param description informative labels for each element of x
-#'  @param title a title to appear in the pdf
-#'  @param short short title a.k.a. lhead1 (upper left pdf header)
-#'  @param protocol relevant protocols a.k.a. lhead2 (lower left pdf header)
-#'  @param sponsor study sponsor a.k.a. rhead1 (upper right pdf header)
-#'  @param program drug development program a.k.a. rhead2 (lower right pdf header)
-#'  @param author document author a.k.a. lfoot left pdf footer, italicized)
-#'  @param date date format string a.k.a. rfoot (right footer) today's date by default
-#'  @param logo file path for logo to include on cover page
-#'  @param logoscale size adjustment for logo
-#'  @param dir path to directory in which to place pdf and copied (transformed) files
-#'  @param subdir path to subdirectories to which to copy each (transformed) file represented by x; use NULL to suppress archiving
-#'  @param clear should dir be deleted if it exists?
-#'  @param ... passed to as.submission and as.pdf
-#'  
-#'  @return invisible result of as.pdf.  Used for side effects.
-#'  @export
-#'  @describeIn define character method for define
-#'  @examples 
+#' @param x paths to existing files to be documented; possibly a named character vector
+#' @param stem the base of the file name for the pdf to be created
+#' @param tag short object names for each element of x; appears in pdf menu, and as table name in XPT file
+#' @param description informative labels for each element of x
+#' @param title a title to appear in the pdf
+#' @param short short title a.k.a. lhead1 (upper left pdf header)
+#' @param protocol relevant protocols a.k.a. lhead2 (lower left pdf header)
+#' @param sponsor study sponsor a.k.a. rhead1 (upper right pdf header)
+#' @param program drug development program a.k.a. rhead2 (lower right pdf header)
+#' @param author document author a.k.a. lfoot left pdf footer, italicized)
+#' @param date date format string a.k.a. rfoot (right footer) today's date by default
+#' @param logo file path for logo to include on cover page
+#' @param logoscale size adjustment for logo
+#' @param dir path to directory in which to place pdf and copied (transformed) files
+#' @param subdir path to subdirectories to which to copy each (transformed) file represented by x; use NULL to suppress archiving
+#' @param clear should dir be deleted if it exists?
+#' @param ... passed to as.submission and as.pdf
+#' @examples 
 #'  
 #' code <- "write.csv(x=Theoph,file='theoph.csv',row.names=FALSE,quote=FALSE)"
 #' writeLines(code,'theoph.R')
@@ -565,6 +561,9 @@ define <- function(x,...)UseMethod('define')
 #'   logoscale = 2,
 #'   clear=FALSE
 #' )
+#' @return invisible result of as.pdf.  Used for side effects.
+#' @export
+#' @describeIn define character method for define
 
 define.character<- function(
   x,
