@@ -11,7 +11,7 @@ define(x, ...)
   description = basename(x), title = dirname(x[[1]]), short = title,
   protocol = "~", sponsor = "~", program = "~", author = "~",
   date = "\\\\mydate \\\\today", logo = NULL, logoscale = 1,
-  dir = "./define", subdir = ".", clear = TRUE, ...)
+  dir = "./define", subdir = ".", clear = TRUE, units = FALSE, ...)
 }
 \arguments{
 \item{x}{paths to existing files to be documented; possibly a named character vector}
@@ -47,6 +47,8 @@ define(x, ...)
 \item{subdir}{path to subdirectories to which to copy each (transformed) file represented by x; use NULL to suppress archiving}
 
 \item{clear}{should dir be deleted if it exists?}
+
+\item{units}{should units for continuous varables be printed in Codes column?}
 }
 \value{
 invisible result of as.pdf.  Used for side effects.

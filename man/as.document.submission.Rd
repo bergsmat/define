@@ -26,7 +26,7 @@
   ")), metrumrg::command("lfoot", args = metrumrg::command("textit", args = lfoot)), metrumrg::command("rfoot", 
         args = "\\\\mydate
   \\\\today"), metrumrg::command("date", args = "\\\\mydate
-  \\\\today"), metrumrg::command("title", args = title)), geoLeft = "1in", geoRight = "1in", geoTop = "1in", geoBottom = "1in", pagestyle = NULL, thispagestyle = NULL, ...)
+  \\\\today"), metrumrg::command("title", args = title)), geoLeft = "1in", geoRight = "1in", geoTop = "1in", geoBottom = "1in", pagestyle = NULL, thispagestyle = NULL, units = FALSE, ...)
 }
 \arguments{
 \item{x}{a list of artifacts each having attributes: x, tag, des, file, spec}

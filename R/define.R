@@ -529,6 +529,7 @@ define <- function(x,...)UseMethod('define')
 #' @param dir path to directory in which to place pdf and copied (transformed) files
 #' @param subdir path to subdirectories to which to copy each (transformed) file represented by x; use NULL to suppress archiving
 #' @param clear should dir be deleted if it exists?
+#' @param units should units for continuous varables be printed in Codes column?
 #' @param ... passed to as.submission and as.pdf
 #' @examples 
 #'  
@@ -582,6 +583,7 @@ define.character<- function(
   dir = './define',
   subdir = '.', 
   clear = TRUE,
+  units = FALSE,
   ...  
 ){
   if(clear)unlink(dir, recursive=TRUE,force=TRUE)
@@ -628,6 +630,7 @@ define.character<- function(
     date=date,
     logo=logo,
     logoscale=logoscale,
+    units=units,
     ...
   )
   as.pdf(z,stem=stem,dir=dir,...)
@@ -717,6 +720,7 @@ as.document.submission <- function (
   geoBottom = "1in", 
   pagestyle = NULL,
   thispagestyle = NULL,
+  units=FALSE,
   ...
 ) {
   menu <- .menu(
@@ -731,10 +735,12 @@ as.document.submission <- function (
   specified <- sapply(x,function(i)!identical(NA,i[['spec']]))
   specified <- x[specified]
   
-  specify <- function(x,sep=' : ',collapse='\n\n', ...){
+  specify <- function(x,sep=' : ',collapse='\n\n', units=FALSE, ...){
     caption <- x[['tag']]
     spec <- x[['spec']]
     des <- x[['des']]
+    text <- guidetext(spec)
+    if(units)spec$guide[!is.na(text)] <- sapply(text[!is.na(text)],encode,sep='|')
     def <- metrumrg::as.define(spec,sep=sep,collapse=collapse,...)
     #tab <- tabular(def,caption = caption,...)
     tab <- tabular(def,...)
@@ -746,7 +752,7 @@ as.document.submission <- function (
     tab
   }
   
-  specifics <- lapply(specified,specify,...)
+  specifics <- lapply(specified,specify,units=units,...)
   specifics <- unlist(specifics)
   body <- c(
     menu,
