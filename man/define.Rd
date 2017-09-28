@@ -83,25 +83,52 @@ Define a set of files per FDA guidance.
 }}
 
 \examples{
-library(spec)
-library(latexpdf)
+library(spec)                   # read and write data specifications
+library(latexpdf)               # make dummy logo for pdf
+library(encode)                 # encode factor levels for spec file
 
-dir <- tempdir()
-dir <- gsub('\\\\\\\\','/',dir)
-outdir <- file.path(dir,'out')
-csv <- file.path(dir,'theoph.csv')
-script <- file.path(dir,'theoph.R')
-spec <- file.path(dir,'theoph.spec')
-logo <- file.path(dir,'logo.pdf')
+dir <- tempdir()                # a place to experiment
+dir <- gsub('\\\\\\\\','/',dir)     # clean up windows path
+outdir <- file.path(dir,'out')  # where to put the define archive
+csv <- file.path(dir,'theoph.csv')    # path to data
+script <- file.path(dir,'theoph.R')   # path to script making data
+spec <- file.path(dir,'theoph.spec')  # path to data specification
+logo <- file.path(dir,'logo.pdf')     # path to dummy logo
+
+# make dummy logo
 as.pdf('{\\\\huge \\\\em Pharma, Inc.}',wide = 50, long = 8,stem = 'logo', dir = dir)
 
+# make data more interesting
+Theoph$renal <- 0
+
+# create script
 code <- "write.csv(x = Theoph,file = csv,row.names = FALSE,quote = FALSE)"
 writeLines(code,script)
+
+# 'run' the script
 eval(parse(text = code))
-write.spec(specification(Theoph),spec)
+
+# make data specification
+s <- specification(Theoph)
+renalcat <- c(
+ 'GFR >= 90 mL/min/1.73m^2',
+ '60 <= GFR < 90 mL/min/1.73m^2',
+ '45 <= GFR < 60 mL/min/1.73m^2',
+ '30 <= GFR < 45 mL/min/1.73m^2',
+ 'GFR < 30 mL/min/1.73m^2'
+)
+codes <- encode(0:4, renalcat)
+codes
+s$guide[s$column == 'renal'] <- codes
+
+write.spec(s,spec)
 
 file.exists(csv)
-define(c(theoph = csv),stem = 'minimal',dir = outdir)
+file.exists(spec)
+define(c(theoph = csv),stem = 'minimal',dir = outdir, clean=FALSE)
+\dontrun{
+browseURL(file.path(outdir,'minimal.pdf'))
+}
 
 define(
   x = c(
@@ -127,6 +154,9 @@ define(
   clear = FALSE,
   dir = outdir
 )
+\dontrun{
+browseURL(file.path(outdir,'define.pdf'))
+}
 }
 \seealso{
 \url{http://tinyurl.com/fda-pdf-spec-4-0}

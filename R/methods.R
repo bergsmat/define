@@ -17,7 +17,7 @@ as.define <- function (x, ...) UseMethod("as.define")
 #' @seealso \code{\link[spec]{specification}}
 #' @seealso \code{\link[spec]{as.spec}}
 
-as.define.spec <- function(x,sep = ' = ',collapse = '; ',escape = c('_','%','$'),...){
+as.define.spec <- function(x,sep = ' = ',collapse = '; ',escape = character(0),...){
   x$required <- NULL
   names(x) <- c('Variable', 'Label', 'Type', 'Codes','Comments')
   x$Type <- map(x$Type, from = c('character','numeric','integer','datetime'),
@@ -34,7 +34,13 @@ as.define.spec <- function(x,sep = ' = ',collapse = '; ',escape = c('_','%','$')
   }
   x$Codes <- sapply(seq_along(codes),function(i)blend(codes[[i]],decodes[[i]]))
   polish <- function(x,escape){
-    for(i in escape)x <- gsub(i,paste0('\\',i),x,fixed = TRUE)
+    # https://tex.stackexchange.com/questions/34580/escape-character-in-latex
+    canonical <- c('&','%','$','#','_','{','}')
+    special   <- c('~','^','\\')
+    x <- gsub('\\','\\textbackslash ',x,fixed = TRUE) # must handle first
+    x <- gsub('~','\\textasciitilde ',x, fixed = TRUE)
+    x <- gsub('^','\\textasciicircum ',x, fixed = TRUE)
+    for(i in union(escape,canonical)) x <- gsub(i,paste0('\\',i),x,fixed = TRUE)
     x
   }    
   x[] <- lapply(x, polish,escape = escape)

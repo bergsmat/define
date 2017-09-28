@@ -2,7 +2,8 @@ Package: define
 Type: Package
 Title: Create FDA-style Dataset and Program Definitions
 Version: 0.2.1
-Author: Tim Bergsma
+Author: Tim Bergsma [aut, cre],
+ Scott Pivirotto [ctb]
 Maintainer: Tim Bergsma <bergsmat@gmail.com>
 Description: Creates a directory of archived files with a descriptive PDF
  document at the root level (i.e. 'define.pdf') containing tables
