@@ -1,7 +1,7 @@
 Package: define
 Type: Package
-Title: Create FDA-style Dataset and Program Definitions
-Version: 0.2.1
+Title: Create FDA-Style Dataset and Program Definitions
+Version: 0.2.2
 Author: Tim Bergsma [aut, cre],
  Scott Pivirotto [ctb]
 Maintainer: Tim Bergsma <bergsmat@gmail.com>
