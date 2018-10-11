@@ -1,7 +1,7 @@
 Package: define
 Type: Package
 Title: Create FDA-Style Data and Program Definitions
-Version: 0.2.5
+Version: 0.2.7
 Author: Tim Bergsma [aut, cre],
  Scott Pivirotto [ctb]
 Maintainer: Tim Bergsma <bergsmat@gmail.com>

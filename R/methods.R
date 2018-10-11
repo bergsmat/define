@@ -56,7 +56,7 @@ as.define.spec <- function(x,sep = ' = ',collapse = '; ',escape = character(0),.
 #' @param stem passed to \code{\link[latexpdf]{as.pdf}}
 #' @param ... passed to \code{\link[latexpdf]{as.pdf}} and \code{\link[latexpdf]{as.document}}
 #' @import latexpdf
-as.pdf.define <- function(x,stem,...)as.pdf(stem=stem,as.document(x,...),...)
+as.pdf.define <- function(x,stem, ...)as.pdf(stem=stem,as.document(x, ...), ...)
   
 
 #' Coerce to Tabular from Define
@@ -74,6 +74,7 @@ as.pdf.define <- function(x,stem,...)as.pdf(stem=stem,as.document(x,...),...)
 #' @param pretable material to include before table, typically a caption
 #' @param prepos after which line number should pretable be inserted?
 #' @param headerBold whether to use a bold header
+#' @param reserve passed to \code{\link[latexpdf]{as.tabular}}
 #' @param ... passed to \code{\link[latexpdf]{as.tabular}}
 #' @import latexpdf
 
@@ -89,6 +90,7 @@ as.tabular.define <- function(
   pretable = if(is.null(caption)) '' else paste(if(tabnum) '\\caption{' else '\\caption*{',caption,'}\\\\'),
   prepos = 1,
   headerBold = TRUE,
+  reserve = FALSE,
   ...
 ){
   if(headerBold) names(x) <- paste0('\\textbf{',names(x),'}')
@@ -100,6 +102,7 @@ as.tabular.define <- function(
     colwidth=colwidth,
     tabularEnvironment=tabularEnvironment,
     walls=walls,
+    reserve = reserve,
     ...
   )
   tab <- append(tab,pretable,prepos)

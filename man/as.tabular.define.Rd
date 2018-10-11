@@ -9,7 +9,7 @@
   tabularEnvironment = "longtable", walls = 1, tabnum = FALSE,
   pretable = if (is.null(caption)) "" else paste(if (tabnum) "\\\\caption{"
   else "\\\\caption*{", caption,
-  "}\\\\\\\\"), prepos = 1, headerBold = TRUE, ...)
+  "}\\\\\\\\"), prepos = 1, headerBold = TRUE, reserve = FALSE, ...)
 }
 \arguments{
 \item{x}{define object}
@@ -33,6 +33,8 @@
 \item{prepos}{after which line number should pretable be inserted?}
 
 \item{headerBold}{whether to use a bold header}
+
+\item{reserve}{passed to \code{\link[latexpdf]{as.tabular}}}
 
 \item{...}{passed to \code{\link[latexpdf]{as.tabular}}}
 }
