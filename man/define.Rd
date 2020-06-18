@@ -128,7 +128,7 @@ write.spec(s,spec)
 
 file.exists(csv)
 file.exists(spec)
-define(c(theoph = csv),stem = 'minimal',dir = outdir, clean=FALSE)
+# define(c(theoph = csv),stem = 'minimal',dir = outdir, clean=FALSE)
 # browseURL(file.path(outdir,'minimal.pdf'))
 # browseURL(system.file(package = 'define', 'minimal.pdf')) # cached
 
