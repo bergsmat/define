@@ -30,7 +30,7 @@
 
 \item{pagestyle}{passed to \code{latexpdf::as.document.character}}
 
-\item{...}{passed to \code{latexpdf::as.document.character and \code{\link{as.tabular.define}}}}
+\item{...}{passed to \code{latexpdf::as.document.character} and \code{\link{as.tabular.define}}}
 }
 \description{
 Coerces to class 'document' from class 'define'.
