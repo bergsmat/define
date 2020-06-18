@@ -18,7 +18,7 @@ metadata encoding from \pkg{encode} and more about
 specification files from \pkg{spec}.
 }
 \references{
-\href{http://tinyurl.com/nqcp7u3}{FDA Study Data Specifications}
+\href{https://www.fda.gov/media/83880/download}{FDA Study Data Specifications}
 
 \href{http://tinyurl.com/onocmc5}{FDA PDF Specifications}
 

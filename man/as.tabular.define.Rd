@@ -4,12 +4,22 @@
 \alias{as.tabular.define}
 \title{Coerce to Tabular from Define}
 \usage{
-\method{as.tabular}{define}(x, caption = "", grid = TRUE, rules = 1,
+\method{as.tabular}{define}(
+  x,
+  caption = "",
+  grid = TRUE,
+  rules = 1,
   colwidth = c("1in", "1in", "0.5in", "1.5in", "1.5in"),
-  tabularEnvironment = "longtable", walls = 1, tabnum = FALSE,
-  pretable = if (is.null(caption)) "" else paste(if (tabnum) "\\\\caption{"
-  else "\\\\caption*{", caption,
-  "}\\\\\\\\"), prepos = 1, headerBold = TRUE, reserve = FALSE, ...)
+  tabularEnvironment = "longtable",
+  walls = 1,
+  tabnum = FALSE,
+  pretable = if (is.null(caption)) "" else paste(if (tabnum) "\\\\caption{" else
+    "\\\\caption*{", caption, "}\\\\\\\\"),
+  prepos = 1,
+  headerBold = TRUE,
+  reserve = FALSE,
+  ...
+)
 }
 \arguments{
 \item{x}{define object}

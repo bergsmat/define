@@ -4,9 +4,16 @@
 \alias{as.document.define}
 \title{Coerce to Document from Define}
 \usage{
-\method{as.document}{define}(x, morePreamble = command("usepackage", args =
-  "longtable"), geoLeft = "1in", geoRight = "1in", geoTop = "1in",
-  geoBottom = "1in", pagestyle = command("pagestyle", args = "plain"), ...)
+\method{as.document}{define}(
+  x,
+  morePreamble = command("usepackage", args = "longtable"),
+  geoLeft = "1in",
+  geoRight = "1in",
+  geoTop = "1in",
+  geoBottom = "1in",
+  pagestyle = command("pagestyle", args = "plain"),
+  ...
+)
 }
 \arguments{
 \item{x}{passed to \code{\link{as.tabular.define}}}

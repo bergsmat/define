@@ -4,13 +4,33 @@
 \alias{as.document.submission}
 \title{Coerce a submission object to a document.}
 \usage{
-\method{as.document}{submission}(x, title, short = title, protocol = "~",
-  sponsor = "~", program = "~", author = "~",
-  date = "\\\\mydate \\\\today", lhead1 = short, lhead2 = protocol,
-  rhead1 = sponsor, rhead2 = program, lfoot = author, rfoot = date,
-  logo = NULL, logoscale = 1, morePreamble = NULL, geoLeft = "1in",
-  geoRight = "1in", geoTop = "1in", geoBottom = "1in", pagestyle = NULL,
-  thispagestyle = NULL, units = FALSE, ...)
+\method{as.document}{submission}(
+  x,
+  title,
+  short = title,
+  protocol = "~",
+  sponsor = "~",
+  program = "~",
+  author = "~",
+  date = "\\\\mydate \\\\today",
+  lhead1 = short,
+  lhead2 = protocol,
+  rhead1 = sponsor,
+  rhead2 = program,
+  lfoot = author,
+  rfoot = date,
+  logo = NULL,
+  logoscale = 1,
+  morePreamble = NULL,
+  geoLeft = "1in",
+  geoRight = "1in",
+  geoTop = "1in",
+  geoBottom = "1in",
+  pagestyle = NULL,
+  thispagestyle = NULL,
+  units = FALSE,
+  ...
+)
 }
 \arguments{
 \item{x}{a list of artifacts each having attributes: x, tag, des, file, spec}

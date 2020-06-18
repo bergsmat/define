@@ -7,8 +7,7 @@
 \usage{
 as.define(x, ...)
 
-\method{as.define}{spec}(x, sep = " = ", collapse = "; ",
-  escape = character(0), ...)
+\method{as.define}{spec}(x, sep = " = ", collapse = "; ", escape = character(0), ...)
 }
 \arguments{
 \item{x}{object}

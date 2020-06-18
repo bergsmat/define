@@ -7,8 +7,14 @@
 \usage{
 as.submission(x, ...)
 
-\method{as.submission}{character}(x, tag = names(x),
-  description = basename(x), dir = ".", subdir = NULL, ...)
+\method{as.submission}{character}(
+  x,
+  tag = names(x),
+  description = basename(x),
+  dir = ".",
+  subdir = NULL,
+  ...
+)
 }
 \arguments{
 \item{x}{filenames: xpt, csv, spec, txt, other}

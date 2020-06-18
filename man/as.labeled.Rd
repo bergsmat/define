@@ -7,8 +7,14 @@
 \usage{
 as.labeled(x, ...)
 
-\method{as.labeled}{character}(x, spec, as.is = TRUE, na.strings = c("",
-  "."), rename = function(x, ...) x, ...)
+\method{as.labeled}{character}(
+  x,
+  spec,
+  as.is = TRUE,
+  na.strings = c("", "."),
+  rename = function(x, ...) x,
+  ...
+)
 }
 \arguments{
 \item{x}{length-one filename for csv-formatted data file}
