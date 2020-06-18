@@ -65,19 +65,19 @@
 
 \item{logoscale}{size adjustment for logo}
 
-\item{morePreamble}{if NULL, a special value is passed to \code{\link[latexpdf]{as.document.character}}.  See function definition for details, and override if necessary.}
+\item{morePreamble}{if NULL, a special value is passed to \code{latexpdf::as.document.character}.  See function definition for details, and override if necessary.}
 
-\item{geoLeft}{passed to \code{\link[latexpdf]{as.document.character}}}
+\item{geoLeft}{passed to \code{latexpdf::as.document.character}}
 
-\item{geoRight}{passed to \code{\link[latexpdf]{as.document.character}}}
+\item{geoRight}{passed to \code{latexpdf::as.document.character}}
 
-\item{geoTop}{passed to \code{\link[latexpdf]{as.document.character}}}
+\item{geoTop}{passed to \code{latexpdf::as.document.character}}
 
-\item{geoBottom}{passed to \code{\link[latexpdf]{as.document.character}}}
+\item{geoBottom}{passed to \code{latexpdf::as.document.character}}
 
-\item{pagestyle}{passed to \code{\link[latexpdf]{as.document.character}}}
+\item{pagestyle}{passed to \code{latexpdf::as.document.character}}
 
-\item{thispagestyle}{passed to \code{\link[latexpdf]{as.document.character}}}
+\item{thispagestyle}{passed to \code{latexpdf::as.document.character}}
 
 \item{units}{Should units for continuous variables be printed in Codes column?}
 

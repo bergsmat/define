@@ -26,15 +26,15 @@
 
 \item{caption}{caption for definitions table}
 
-\item{grid}{passed to \code{\link[latexpdf]{as.tabular.data.frame}}}
+\item{grid}{passed to \code{latexpdf::as.tabular.data.frame}}
 
-\item{rules}{passed to \code{\link[latexpdf]{as.tabular.data.frame}}}
+\item{rules}{passed to \code{latexpdf::as.tabular.data.frame}}
 
-\item{colwidth}{passed to \code{\link[latexpdf]{as.tabular.data.frame}}}
+\item{colwidth}{passed to \code{latexpdf::as.tabular.data.frame}}
 
-\item{tabularEnvironment}{passed to \code{\link[latexpdf]{as.tabular.data.frame}}}
+\item{tabularEnvironment}{passed to \code{latexpdf::as.tabular.data.frame}}
 
-\item{walls}{passed to \code{\link[latexpdf]{as.tabular.data.frame}}}
+\item{walls}{passed to \code{latexpdf::as.tabular.data.frame}}
 
 \item{tabnum}{whether to number the table}
 
